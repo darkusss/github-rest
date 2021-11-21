@@ -39,5 +39,7 @@ module.exports = {
     ],
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
+    'react/function-component-definition': [2, { namedComponents: 'arrow-function' }],
+    'react/require-default-props': 'off',
   },
 };
