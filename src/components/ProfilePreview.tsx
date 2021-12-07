@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import UserContext from '../contexts/userContext';
 import styles from '../scss/ProfilePreview.module.scss';
 
 interface Props {
     username: string;
 }
 
-type User = Record<string, string> | null;
-
 const ProfilePreview = ({ username }: Props) => {
-  const [userData, setUserData] = useState<User>(null);
   const [error, setError] = useState<string>('');
+  const { userData, setUserData } = useContext(UserContext);
 
   useEffect(() => {
     async function getGitHubUser() {
@@ -21,11 +20,17 @@ const ProfilePreview = ({ username }: Props) => {
         if (data.message) {
           setError(data.message);
         } else {
-          setUserData(data);
+          if (setUserData) {
+            setUserData(data);
+          }
           setError('');
         }
-      } catch (message) {
-        setError(`Got: ${message}`);
+      } catch (incomeError: unknown) {
+        let errorMessage = 'Something unexpected happened. Try later';
+        if (incomeError instanceof Error) {
+          errorMessage = incomeError.message;
+          setError(errorMessage);
+        }
       }
     }
 
@@ -34,9 +39,9 @@ const ProfilePreview = ({ username }: Props) => {
     }
   }, [username]);
 
-  if (error || !userData) {
+  if (error) {
     return (
-      <div>
+      <div className={styles.container}>
         <span>{error}</span>
       </div>
     );
@@ -44,23 +49,27 @@ const ProfilePreview = ({ username }: Props) => {
 
   return (
     <div className={styles.container}>
-      <Link to={`profile/${username}`}>
-        <div>
-          <div>
-            <img
-              className={styles.avatar}
-              src={userData.avatar_url}
-              alt={`${userData.avatar_url} of ${userData.name}`}
-            />
-          </div>
-          <div><h2>{userData.name || username}</h2></div>
-          <div>
-            Repos:
-            {' '}
-            {userData.public_repos}
-          </div>
-        </div>
-      </Link>
+      {!userData?.login
+        ? <span>Hello!</span>
+        : (
+          <Link to={`profile/${username}`}>
+            <div>
+              <div>
+                <img
+                  className={styles.avatar}
+                  src={userData.avatar_url}
+                  alt={`${userData.avatar_url} of ${userData.name}`}
+                />
+              </div>
+              <div><h2>{userData.name || username}</h2></div>
+              <div>
+                Repos:
+                {' '}
+                {userData.public_repos}
+              </div>
+            </div>
+          </Link>
+        )}
     </div>
   );
 };

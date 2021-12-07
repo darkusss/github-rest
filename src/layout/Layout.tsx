@@ -1,15 +1,12 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 
-interface Props {
-    children: React.ReactNode;
-}
-
-const Layout = ({ children }: Props) => (
+const Layout = () => (
   <div>
     <Header />
-    {children}
+    <Outlet />
     <Footer />
   </div>
 );

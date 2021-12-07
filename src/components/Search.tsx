@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 
 interface Props {
     query: string;
@@ -7,13 +6,11 @@ interface Props {
 }
 
 const Search = ({ query, handleQuery }: Props) => {
-  const [, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(query);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       handleQuery(searchQuery);
-      setSearchParams({ user: searchQuery });
     }, 650);
 
     return () => {
